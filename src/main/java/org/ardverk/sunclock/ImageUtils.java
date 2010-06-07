@@ -31,14 +31,25 @@ class ImageUtils {
 
     private ImageUtils() {}
 
+    /**
+     * Takes the image brightness and turns it into an alpha-channel.
+     */
     public static BufferedImage brightnessToAlpha(
             Image image, float alpha) {
+        return brightnessToAlpha(image, (int)(255f * alpha));
+    }
+    
+    /**
+     * Takes the image brightness and turns it into an alpha-channel.
+     */
+    public static BufferedImage brightnessToAlpha(
+            Image image, int alpha) {
         
         if (image == null) {
             throw new NullPointerException("image");
         }
         
-        if (alpha < 0.0f || alpha > 1.0f) {
+        if (alpha < 0 || 255 < alpha) {
             throw new IllegalArgumentException("alpha=" + alpha);
         }
         
@@ -68,7 +79,7 @@ class ImageUtils {
             Color.RGBtoHSB(r, g, b, hsb);
             
             // Use the Brightness to compute the alpha value
-            a = (int)(hsb[2] * 255f * alpha);
+            a = (int)(hsb[2] * alpha);
             
             // Re-Create the pixel with the new alpha value
             rgb[i] = (value & 0x00FFFFFF) | (a << 24);
@@ -78,6 +89,9 @@ class ImageUtils {
         return dst;
     }
 
+    /**
+     * Scales an image to the given dimensions.
+     */
     public static BufferedImage scale(Image image, int w, int h) {
         if (image == null) {
             throw new NullPointerException("image");
@@ -113,6 +127,10 @@ class ImageUtils {
         return dst;
     }
     
+    /**
+     * Takes an {@link Image} and adds an alpha-channel component to it.
+     * In other words, a RGB image is turned into an ARGB image.
+     */
     public static BufferedImage createWithAlpha(Image image) {
         if (image == null) {
             throw new NullPointerException("image");
@@ -139,6 +157,9 @@ class ImageUtils {
         return dst;
     }
     
+    /**
+     * Takes an {@link Image} and turns it into a {@link BufferedImage}.
+     */
     public static BufferedImage toBufferedImage(Image image) {
         if (image == null) {
             throw new NullPointerException("image");
@@ -160,6 +181,9 @@ class ImageUtils {
         return dst;
     }
     
+    /**
+     * Loads an image from the given {@link URL}.
+     */
     public static BufferedImage load(URL url) throws IOException {
         BufferedImage image = ImageIO.read(url);
         return createWithAlpha(image);
